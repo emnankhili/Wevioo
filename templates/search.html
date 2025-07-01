@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Recherche Experts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            padding: 40px;
+            background-color: #f4f6f9;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
+            position: relative;
+        }
+
+        /* Conteneur titre + icône */
+        .header {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header i {
+            cursor: pointer;
+            font-size: 18px;
+            color: #004b91;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        h2, h3 {
+            color: #004b91;
+            margin: 0;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 25px;
+            background-color: #004b91;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0066c2;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: #f9f9f9;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #004b91;
+        }
+
+        a {
+            color: #004b91;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="header">
+        <i class="fas fa-sync-alt" onclick="resetSearch()" title="Réinitialiser"></i>
+        <h2>Rechercher un Expert</h2>
+    </div>
+
+    <form method="POST">
+        <label class="label" for="nom">Nom complet :</label>
+        <input type="text" name="nom" id="nom" placeholder="Nom Complet de candidat" oninput="fetchSuggestions(this.value)">
+        <div id="suggestions" style="background:white; border:1px solid #ccc; max-height:150px; overflow-y:auto; border-radius:8px; position:relative; z-index:999;"></div>
+
+        <label class="label" for="domaine">Domaine d’expertise :</label>
+        <select name="domaine" id="domaine">
+            <option value="">-- Tous les domaines --</option>
+            {% for d in domaines %}
+                <option value="{{ d }}">{{ d }}</option>
+            {% endfor %}
+        </select>
+
+        <label class="label" for="mot_cle">Mot clé (T24, Oracle...):</label>
+        <input type="text" name="mot_cle" id="mot_cle" placeholder="Mot à chercher dans les CV...">
+
+        <h3> Résultats trouvés : {{ results|length }}</h3>
+
+        <button type="submit">Rechercher</button>
+    </form>
+
+    {% if results %}
+        <h3> Résultats trouvés : {{ results|length }}</h3>
+        <ul>
+            {% for r in results %}
+                <li>
+                    <strong>{{ r["nom_complet"] }}</strong><br>
+                    📘 <em>{{ r["domaine_expertise"] }}</em><br>
+                    📎 <a href="/uploads/{{ r['fichier'] }}">Télécharger le CV</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% elif request.method == "POST" %}
+        <p>Aucun résultat trouvé.</p>
+    {% endif %}
+
+    <a href="/">🔙 Revenir à l’accueil</a>
+</div>
+
+<script>
+    async function fetchSuggestions(query) {
+        const suggestionsBox = document.getElementById("suggestions");
+        if (query.length < 1) {
+            suggestionsBox.innerHTML = "";
+            return;
+        }
+
+        const response = await fetch(`/autocomplete?query=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        suggestionsBox.innerHTML = "";
+        data.forEach(name => {
+            const item = document.createElement("div");
+            item.textContent = name;
+            item.style.padding = "8px";
+            item.style.cursor = "pointer";
+            item.addEventListener("click", () => {
+                document.getElementById("nom").value = name;
+                suggestionsBox.innerHTML = "";
+            });
+            suggestionsBox.appendChild(item);
+        });
+    }
+
+    function resetSearch() {
+        document.getElementById("nom").value = "";
+        document.getElementById("domaine").selectedIndex = 0;
+        document.getElementById("mot_cle").value = "";
+        window.location.href = "/search";  // recharge la page en GET sans filtre
+    }
+</script>
+
+</body>
+</html>

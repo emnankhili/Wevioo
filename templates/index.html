@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Analyse de CV - Wevioo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0eafc, #f4f6f9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .upload-container {
+            background-color: #fff;
+            padding: 60px 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #004b91;
+            margin-bottom: 30px;
+        }
+
+        /* Cache l'input original */
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-label {
+            display: inline-block;
+            background-color: #f7faff;
+            border: 2px dashed #c3d1e6;
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            cursor: pointer;
+            color: #555;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-file-label:hover {
+            background-color: #eef4ff;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        button, .search-button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 30px;
+            background-color: #004b91;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
+        }
+
+        button:hover, .search-button:hover {
+            background-color: #0066c2;
+            transform: translateY(-2px);
+        }
+
+        .search-button {
+            margin-left: 10px;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        @media (max-width: 500px) {
+            .upload-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            button, .search-button {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h1> Analyse Automatique de CV</h1>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <label class="custom-file-label" for="cv">📁 Choisir un fichier</label>
+            <input type="file" id="cv" name="cv" required onchange="updateFileName(this)">
+            <div class="file-name" id="file-name">Aucun fichier sélectionné</div>
+            <button type="submit">Analyser le CV</button>
+            <a href="/search" class="search-button">Rechercher un expert</a>
+        </form>
+        <footer>Powered by <strong>Wevioo CV Intelligence</strong></footer>
+    </div>
+
+    <script>
+        function updateFileName(input) {
+            const fileName = input.files.length ? input.files[0].name : "Aucun fichier sélectionné";
+            document.getElementById("file-name").textContent = fileName;
+        }
+    </script>
+</body>
+</html>

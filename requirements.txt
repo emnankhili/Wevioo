@@ -1,0 +1,14 @@
+pdfplumber
+pytesseract
+pillow
+python-docx
+docx2pdf
+flask
+openpyxl
+spacy
+requests
+pandas
+openpyxl
+openai
+sentence-transformers
+faiss-cpu

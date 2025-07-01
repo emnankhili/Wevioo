@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Résultat CV</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            padding: 40px;
+            background-color: #f4f6f9;
+        }
+
+        .card {
+            display: flex;
+            gap: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .section {
+            flex: 1;
+        }
+
+        h2, h3 {
+            color: #004b91;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 25px;
+            background-color: #004b91;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0066c2;
+        }
+
+        pre {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            border: 1px solid #ddd;
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #004b91;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="card" style="display: flex; gap: 30px; max-width: 1200px;">
+    <!-- Colonne gauche : Résumé -->
+    <div class="section" style="flex: 1;">
+        <h2>Résumé du CV</h2>
+        <p><span class="label">Nom :</span> {{ info.nom_complet }}</p>
+        <p><span class="label">Domaine :</span> {{ info.domaine_expertise }}</p>
+        <p><span class="label">Diplôme principal :</span> {{ info.date_diplome_principal }}</p>
+        <p><span class="label">Années d'expérience :</span> {{ info.annees_experience }}</p>
+        <p><span class="label">Nationalité :</span> {{ info.nationalite }}</p>
+        <p><span class="label">Diplômes :</span> {{ info.diplomes | join(', ') }}</p>
+
+        <h2>Interrogez le CV</h2>
+        <form method="POST" action="/ask">
+            <input type="hidden" name="cv_text" value='{{ cv_text | tojson | safe }}'>
+            <input type="hidden" name="data" value='{{ info | tojson | safe }}'>
+            <textarea name="question" rows="3" placeholder="Posez une question sur ce CV..."></textarea>
+            <button type="submit">Envoyer la question</button>
+        </form>
+
+        {% if question %}
+            <h3>Question posée :</h3>
+            <p><em>{{ question }}</em></p>
+            <h3>💬 Réponse :</h3>
+            <pre>{{ answer }}</pre>
+        {% endif %}
+
+        <a href="/">🔙 Revenir à l’accueil</a>
+    </div>
+
+    <!-- Colonne droite : Visionneur du CV -->
+    <div class="section" style="flex: 1;">
+        <h2>CV Original</h2>
+        {% if pdf_filename %}
+    {% if info.fichier.endswith('.docx') %}
+        <iframe src="/temp/{{ info.fichier.replace('.docx', '.pdf') }}" width="100%" height="700px" style="border:1px solid #ccc; border-radius: 8px;"></iframe>
+    {% else %}
+        <iframe src="/uploads/{{ info.fichier }}" width="100%" height="700px" style="border:1px solid #ccc; border-radius: 8px;"></iframe>
+    {% endif %}
+    {% else %}
+        <p><em>❌Aperçu non disponible. Essayez de recharger la page ! </em></p>
+    {% endif %}
+
+
+    </div>
+</div>
+</body>
+</html>
