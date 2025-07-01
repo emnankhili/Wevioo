@@ -311,6 +311,7 @@ def autocomplete():
     noms = df["nom_complet"].dropna().unique()
     suggestions = [n for n in noms if query in str(n).lower()]
     return jsonify(suggestions[:10])  # Limiter à 10 résultats
-
+    
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Port fourni par Render
+    app.run(host="0.0.0.0", port=port, debug=True)
